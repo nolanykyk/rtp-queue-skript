@@ -1,0 +1,42 @@
+# MADE BY NOLAN (discord.gg/mcdevs)
+
+command /rtpqueue:
+	trigger:
+		if {rtpqueue::looking::searching::%player%} is not set:
+			add 1 to {rtpqueue::looking}
+			set {rtpqueue::looking::%player%} to player
+			send message "" to player
+			send message "&aYou're now looking for an rtp fight with &7/rtpqueue" to player
+			send message "" to player
+			send "&aThere is currently %{rtpqueue::looking}% person in queue" to player
+			set {rtpqueue::looking::searching::%player%} to true
+			if {rtpqueue::looking} is greater than 1:
+				set {x} to random number between -1000 and 1000
+				set {z} to random number between -1000 and 1000
+				set {rtplocation} to highest block at location ({x}, 0, {z})
+				loop all blocks above {rtplocation}:
+					if loop-block is air:
+						block below loop-block is not water
+						block below loop-block is not air
+						if block above loop-block is air:
+							teleport {rtpqueue::looking::*} to block above {rtplocation}
+							send action bar "&aYou've successfully rtp'd to another player" to {rtpqueue::looking::*}
+							send "&aYou've successfully rtp'd to another player" to {rtpqueue::looking::*}
+							clear {rtpqueue::looking}
+							clear {rtpqueue::looking::*}
+							clear {rtpqueue::looking::searching::%player%} 
+		if {rtpqueue::looking::searching::%player%} is true:
+			stop
+
+every 1 minute:
+	loop all players:
+		execute console command "rtpqueue-clear"
+		send "&cRTP Queue data has been cleared &7(every 1 minute)" to loop-player
+
+command /rtpqueue-clear:
+	permission: rtpqueue.clear
+	trigger:
+		clear {rtpqueue::looking}
+		clear {rtpqueue::looking::*}
+		clear {rtpqueue::looking::searching::%player%} 
+		send "&aCleared all RTP Queue data" to player
